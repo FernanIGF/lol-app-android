@@ -84,15 +84,19 @@ class SummonerActivity : AppCompatActivity() {
                             }
                         }
 
+                        var count = 0
                         for (match in summoner.history) {
                             val callMatch = RetrofitHelper.getRetrofitNodeJS().create(APIService::class.java).getMatchNodeJS("match/$match")
                             if (callMatch.isSuccessful) {
-                                matches.add(callMatch.body()!!)
+                                if (callMatch.body()!!.info != null) {
+                                    matches.add(callMatch.body()!!)
+                                }
+                                count++
                                 runOnUiThread {
                                     ObjectAnimator.ofInt(binding.progressRV, "progress", matches.size * 10)
                                         .setDuration(500)
                                         .start()
-                                    if (matches.size >= summoner.history.size) {
+                                    if (count >= summoner.history.size) {
                                         binding.progressRV.visibility = View.GONE
                                         setUpRecyclerView()
                                     }
